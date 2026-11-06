@@ -101,7 +101,11 @@ nomad job status docker-hello-world
 View allocation logs:
 
 ```bash
-nomad alloc logs 37f50c21 hello-world
+nomad job allocs docker-hello-world
+```
+
+```bash
+nomad alloc logs <ALLOCATION_ID> hello-world
 ```
 
 Expected output:
