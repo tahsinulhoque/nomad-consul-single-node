@@ -2,93 +2,130 @@
 
 ## Project Overview
 
-This project demonstrates the installation, configuration, and integration of HashiCorp Nomad and Consul on a single Ubuntu Linux environment using WSL2.
+This project demonstrates the installation, configuration, and integration of HashiCorp Nomad and Consul in a single-node Ubuntu environment running on WSL2.
 
-Nomad is configured as both a server and client, while Consul provides service discovery and service registration for the Nomad cluster. Docker Desktop is integrated with WSL2 to enable Nomad's Docker task driver.
+Nomad is configured as both a server and client, while Consul provides service discovery and service registration. Docker Desktop is integrated with WSL2 to enable containerized workload execution through Nomad.
 
 ## Objectives
 
-- Install and configure HashiCorp Consul.
 - Install and configure HashiCorp Nomad.
+- Install and configure HashiCorp Consul.
 - Configure Nomad in single-node server and client mode.
 - Integrate Nomad with Consul.
-- Enable Docker Desktop integration with WSL2.
-- Verify Nomad's Docker driver.
-- Access Nomad and Consul Web UIs.
-- Deploy and test a sample Docker workload (next step).
+- Enable Docker integration with WSL2.
+- Deploy and execute a Docker workload through Nomad.
+- Verify cluster health, service registration, and workload execution.
 
 ## Technology Stack
 
-| Component | Version / Environment |
+| Component | Version |
 |---|---|
 | OS | Ubuntu 26.04 LTS (WSL2) |
-| HashiCorp Consul | 2.1.0 |
-| HashiCorp Nomad | 2.1.1 |
+| Consul | 2.1.0 |
+| Nomad | 2.1.1 |
 | Docker Engine | 29.8.2 |
 | Docker Desktop | 4.95.0 |
 | Git | Git & GitHub |
 
 ## Architecture
 
-The project uses a single-node architecture:
+The single-node environment contains:
 
-- **Consul Agent:** Runs as a server and provides service discovery.
-- **Nomad Server:** Manages scheduling and cluster leadership.
-- **Nomad Client:** Executes workloads on the same node.
-- **Docker Driver:** Allows Nomad to run containerized workloads through Docker.
+- Consul Server
+- Nomad Server
+- Nomad Client
+- Docker Engine
+- Nomad Docker Driver
 
-Nomad and Consul communicate through the local environment.
+Nomad and Consul communicate through local network addresses.
 
-## Installation and Configuration
+## Implementation
 
-### 1. Environment Setup
-
-- Prepared Ubuntu on WSL2.
+### Phase 01 – Environment Preparation
+- Prepared Ubuntu environment using WSL2.
 - Updated system packages.
 - Installed required dependencies.
-- Configured the HashiCorp APT repository.
+- Configured HashiCorp APT repository.
 
-### 2. Consul Setup
-
+### Phase 02 – Consul Installation
 - Installed Consul.
 - Configured a single-node Consul server.
 - Set `bootstrap_expect = 1`.
-- Configured the data directory and local network addresses.
-- Enabled the Consul Web UI.
-- Configured and enabled the systemd service.
+- Configured data directory and network addresses.
+- Enabled Consul Web UI.
+- Configured and enabled systemd service.
 
-### 3. Nomad Setup
+### Phase 03 – Consul Verification
+- Verified Consul service status.
+- Verified cluster membership.
+- Verified Raft leader election.
+- Confirmed Consul HTTP API accessibility.
 
+### Phase 04 – Nomad Installation & Configuration
 - Installed Nomad.
 - Configured Nomad as both server and client.
 - Set `bootstrap_expect = 1`.
-- Configured the data directory and local network addresses.
 - Integrated Nomad with Consul.
-- Enabled and started the Nomad systemd service.
+- Enabled and started Nomad systemd service.
+- Verified Nomad server membership and client node readiness.
+- Verified Nomad Raft leadership.
+- Enabled Docker Desktop WSL2 integration.
+- Verified Nomad Docker driver health.
 
-### 4. Docker Integration
+### Phase 05 – Docker Workload Deployment
+- Created a Nomad batch job specification.
+- Validated the job configuration.
+- Submitted the job using `nomad job run`.
+- Successfully created a Nomad allocation.
+- Executed `hello-world:latest` through the Docker driver.
+- Verified successful task completion.
+- Confirmed the output: `Hello from Docker!`
 
-- Enabled Docker Desktop WSL2 integration for Ubuntu.
-- Verified Docker Engine connectivity.
-- Executed the Docker `hello-world` container successfully.
-- Added the Nomad service account to the Docker group.
-- Restarted Nomad and verified Docker driver health.
+## Docker Workload
+
+Job specification: `jobs/hello-world.nomad.hcl`
+
+Run the job:
+
+```bash
+nomad job validate jobs/hello-world.nomad.hcl
+nomad job run jobs/hello-world.nomad.hcl
+```
+
+Check job status:
+
+```bash
+nomad job status docker-hello-world
+```
+
+View allocation logs:
+
+```bash
+nomad alloc logs 37f50c21 hello-world
+```
+
+Expected output:
+
+```text
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+```
 
 ## Verification Results
 
 | Verification | Result |
 |---|---|
-| Consul service status | Active |
-| Consul cluster membership | Verified |
+| Consul service | Active |
 | Consul Raft leader | Verified |
-| Nomad service status | Active |
-| Nomad server membership | Verified |
-| Nomad client node | Ready |
+| Nomad service | Active |
+| Nomad server | Alive |
+| Nomad client | Ready |
 | Nomad Raft leader | Verified |
 | Consul service registration | Verified |
-| Docker Engine connectivity | Successful |
-| Docker Hello World test | Successful |
+| Docker Engine | Working |
 | Nomad Docker driver | Healthy |
+| Docker workload | Completed |
+| Hello World output | Successful |
 | Nomad Web UI | Accessible |
 | Consul Web UI | Accessible |
 
@@ -101,32 +138,28 @@ Nomad and Consul communicate through the local environment.
 
 ## Screenshots
 
-Implementation evidence is available in the `screenshots/` directory.
+Implementation evidence is available in the `screenshots/` directory:
 
-- `02-environment-setup/` — Environment preparation.
-- `03-consul-installation/` — Consul installation and verification.
-- `04-nomad-installation/` — Nomad installation, cluster verification, Web UI, and Docker integration.
+- `02-environment-setup/` – Environment preparation.
+- `03-consul-installation/` – Consul installation and verification.
+- `04-nomad-installation/` – Nomad installation, Docker integration, workload deployment, and verification.
 
 ## Current Project Status
 
 **Completed:**
 - Environment preparation.
 - Consul installation and configuration.
-- Nomad installation and single-node configuration.
+- Nomad installation and configuration.
 - Nomad–Consul integration.
 - Docker Desktop WSL2 integration.
-- Nomad Docker driver health verification.
-
-**Pending:**
-- Deploying a sample Docker workload through Nomad.
-- Final end-to-end workload verification.
-- Final documentation review.
+- Nomad Docker driver verification.
+- Docker workload deployment and execution.
 
 ## Notes
 
-This is a single-node learning and practical implementation environment. It is not intended to represent a production-ready, highly available deployment.
+This project is intended for learning and practical demonstration in a single-node environment. It is not a production-ready highly available deployment.
 
-Security features such as TLS and ACLs have not yet been configured.
+TLS and ACL security configurations have not been implemented.
 
 ## Author
 
