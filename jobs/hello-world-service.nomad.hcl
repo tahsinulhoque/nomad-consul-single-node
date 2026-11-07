@@ -28,10 +28,9 @@ job "hello-world-service" {
       driver = "docker"
 
       config {
-        image   = "hashicorp/http-echo:1.0.0"
-        ports   = ["http"]
-        command = "/http-echo"
-        args    = ["-listen=:5678", "-text=Hello from Nomad and Consul!"]
+        image = "hashicorp/http-echo:1.0.0"
+        ports = ["http"]
+        args  = ["-listen=:5678", "-text=Hello from Nomad and Consul!"]
       }
 
       resources {
